@@ -1,25 +1,9 @@
-const { MongoClient } = require('mongodb');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-const MONGO_DB_URL = 'mongodb://localhost:27017/PaintWalls';
-const DB_NAME = 'PaintWalls';
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-let schema = null;
+app.use(bodyParser.json());
 
-async function getConnection() {
-  if (schema) return Promise.resolve(schema);
-  return MongoClient
-    .connect(MONGO_DB_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then((conn) => conn.db(DB_NAME))
-    .then((dbSchema) => {
-      schema = dbSchema;
-      return schema;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
-}
-
-module.exports = { getConnection };
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
