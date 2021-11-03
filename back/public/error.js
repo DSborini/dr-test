@@ -1,6 +1,6 @@
 const reqContentError = {
   err: {
-    status: '400',
+    status: 400,
     message: {
       message: 'As informações inseridas são inválidas',
     },
@@ -28,4 +28,5 @@ const minWallHeightError = {
 module.exports = {
   proportionError,
   minWallHeightError,
+  reqContentError,
 };

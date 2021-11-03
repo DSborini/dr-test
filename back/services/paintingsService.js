@@ -1,6 +1,7 @@
 const Joi = require('joi');
 const paintingsModel = require('../models/paintingsModel');
-
+const { proportionError, minWallHeightError, reqContentError } = require('../public/error');
+const { succefulValidation } = require('../public/success');
 const { 
   doorInfo,
   windowInfo,
@@ -11,7 +12,7 @@ const {
 } = require('../public/utils');
 
 const checkWallQuantity = (walls) => {
-  if (walls.length !== 4) return false;
+  if (walls.length > 1) return false;
   return true;
 };
 
@@ -29,18 +30,16 @@ const wallSchema = Joi.object({
 });
 
 const validateWallsInfo = (walls) => {
-  let isValid = true;
   walls.forEach((wall) => {
     const { error } = wallSchema.validate(wall);
     const wallArea = wall.width * wall.height;
     const addonsArea = doorInfo.area + windowInfo.area;
-    if (error) isValid = false;
-    if (wall.door && wall.window && addonsArea > getPercentage(wallArea, 50)) isValid = false;
-    if (wall.door && doorInfo.area > getPercentage(wallArea, 50)) isValid = false;
-    if (wall.door && wall.height < (minWallHeightDoor + doorInfo.height)) isValid = false;
+    if (error) return reqContentError;
+    if (wall.door && wall.window && addonsArea > getPercentage(wallArea, addonsMaxArea)) return proportionError;
+    if (wall.door && doorInfo.area > getPercentage(wallArea, addonsMaxArea)) return proportionError;
+    if (wall.window && windowInfo.area > getPercentage(wallArea, addonsMaxArea)) return proportionError;
+    if (wall.door && wall.height < (minWallHeightDoor + doorInfo.height)) return minWallHeightError;
   });
-
-  return isValid;
 };
 
 const calculateTotalArea = (walls) => {
@@ -74,7 +73,16 @@ const getValidationOrPacks = (walls) => {
   const infoIsValid = validateWallsInfo(walls);
   const isOnlyValidation = checkWallQuantity(walls);
 
-  if (!infoIsValid) return infoIsValid;
+  if (infoIsValid.err) return infoIsValid;
+  if (isOnlyValidation) return succefulValidation; 
+  return {
+    resp: {
+      status: 200,
+      content: {
+        necessaryPacks: calculateNecessaryPack(calculateTotalArea(walls)),
+        calculatedObject: walls,
+      },
+  }
 };
 
 // const teste = [
