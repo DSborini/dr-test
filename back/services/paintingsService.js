@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const paintingsModel = require('../models/paintingsModel');
+// const paintingsModel = require('../models/paintingsModel');
 const { proportionError, minWallHeightError, reqContentError } = require('../public/error');
 const { succefulValidation } = require('../public/success');
 const { 
@@ -63,7 +63,7 @@ const calculateNecessaryPack = (totalArea) => {
   const packsNeeded = {};
   console.log(litersNeeded);
   
-  packs.forEach((value) => packsNeeded[value] = 0);
+  packs.forEach((value) => { packsNeeded[value] = 0; });
   packs.forEach((pack) => {
     while (litersNeeded >= pack) {
       packsNeeded[pack] += 1;
