@@ -30,24 +30,28 @@ const wallSchema = Joi.object({
 });
 
 const validateWallsInfo = (walls) => {
+  let status = succefulValidation;
   walls.forEach((wall) => {
     const { error } = wallSchema.validate(wall);
     const wallArea = wall.width * wall.height;
     const addonsArea = doorInfo.area + windowInfo.area;
-    if (error) return reqContentError;
-    if (wall.door && wall.window && addonsArea > getPercentage(wallArea, addonsMaxArea)) return proportionError;
-    if (wall.door && doorInfo.area > getPercentage(wallArea, addonsMaxArea)) return proportionError;
-    if (wall.window && windowInfo.area > getPercentage(wallArea, addonsMaxArea)) return proportionError;
-    if (wall.door && wall.height < (minWallHeightDoor + doorInfo.height)) return minWallHeightError;
+    if (error) status = reqContentError;
+    if (wall.door && wall.window && addonsArea > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
+    if (wall.door && doorInfo.area > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
+    if (wall.window && windowInfo.area > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
+    if (wall.door && wall.height < (minWallHeightDoor + doorInfo.height)) status = minWallHeightError;
   });
+
+  return status;
 };
 
 const calculateTotalArea = (walls) => {
   let totalArea = 0;
   walls.forEach((wall) => {
+    console.log(totalArea);
     totalArea += wall.width * wall.height;
-    if (wall.door) totalArea -= doorInfo.doorArea;
-    if (wall.window) totalArea -= windowInfo.windowArea;
+    if (wall.door) totalArea -= doorInfo.area;
+    if (wall.window) totalArea -= windowInfo.area;
   });
 
   return totalArea;
@@ -57,6 +61,7 @@ const calculateNecessaryPack = (totalArea) => {
   const packs = Object.values(inkPackaging);
   let litersNeeded = totalArea / inkCapacityPerLiter.squareMeters;
   const packsNeeded = {};
+  console.log(litersNeeded);
   
   packs.forEach((value) => packsNeeded[value] = 0);
   packs.forEach((pack) => {
@@ -65,7 +70,6 @@ const calculateNecessaryPack = (totalArea) => {
       litersNeeded -= pack;
     }
   });
-  
   return packsNeeded;
 };
 
@@ -75,6 +79,7 @@ const getValidationOrPacks = (walls) => {
 
   if (infoIsValid.err) return infoIsValid;
   if (isOnlyValidation) return succefulValidation; 
+
   return {
     resp: {
       status: 200,
@@ -82,38 +87,23 @@ const getValidationOrPacks = (walls) => {
         necessaryPacks: calculateNecessaryPack(calculateTotalArea(walls)),
         calculatedObject: walls,
       },
-  }
+  } };
+};
+
+module.exports = {
+  getValidationOrPacks,
 };
 
 // const teste = [
 //   {
 //     wall: 'wall1',
-//     width: 15,
-//     height: 15,
+//     width: 1,
+//     height: 2.21,
 //     door: true,
 //     window: true,
 //   },
-//   {
-//     wall: 'wall2',
-//     width: 15,
-//     height: 15,
-//     door: false,
-//     window: false,
-//   },
-//   {
-//     wall: 'wall3',
-//     width: 15,
-//     height: 15,
-//     door: false,
-//     window: false,
-//   },
-//   {
-//     wall: 'wall4',
-//     width: 15,
-//     height: 15,
-//     door: false,
-//     window: false,
-//   },
 // ];
 
-validateWallsInfo(teste);
+// console.log(JSON.stringify(getValidationOrPacks(teste)));
+// console.log(calculateNecessaryPack(calculateTotalArea(teste)));
+// console.log(calculateTotalArea(teste));
