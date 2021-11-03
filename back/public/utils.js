@@ -15,15 +15,21 @@ const inkCapacityPerLiter = {
 };
 
 const inkPackaging = {
-  pack1: 0.5,
-  pack2: 2.5,
-  pack3: 3.6,
-  pack4: 18.0,
+  pack1: 18.0,
+  pack2: 3.6,
+  pack3: 2.5,
+  pack4: 0.5,
 };
+
+const minWallHeightDoor = 0.3;
+
+const addonsMaxArea = 50;
 
 module.exports = {
   doorInfo,
   windowInfo,
   inkCapacityPerLiter,
   inkPackaging,
+  minWallHeightDoor,
+  addonsMaxArea,
 };
