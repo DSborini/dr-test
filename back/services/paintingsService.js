@@ -1,7 +1,12 @@
 const Joi = require('joi');
 // const paintingsModel = require('../models/paintingsModel');
-const { proportionError, minWallHeightError, reqContentError } = require('../public/error');
 const { succefulValidation } = require('../public/success');
+const { 
+  proportionError, 
+  minWallHeightError, 
+  reqContentError, 
+  reqQuantError, 
+} = require('../public/error');
 const { 
   doorInfo,
   windowInfo,
@@ -12,8 +17,9 @@ const {
 } = require('../public/utils');
 
 const checkWallQuantity = (walls) => {
-  if (walls.length > 1) return false;
-  return true;
+  if (walls.length === 4) return false;
+  if (walls.length === 1) return succefulValidation;
+  return reqQuantError;
 };
 
 const getPercentage = (totalValue, percentage) => {
@@ -48,7 +54,6 @@ const validateWallsInfo = (walls) => {
 const calculateTotalArea = (walls) => {
   let totalArea = 0;
   walls.forEach((wall) => {
-    console.log(totalArea);
     totalArea += wall.width * wall.height;
     if (wall.door) totalArea -= doorInfo.area;
     if (wall.window) totalArea -= windowInfo.area;
@@ -61,7 +66,6 @@ const calculateNecessaryPack = (totalArea) => {
   const packs = Object.values(inkPackaging);
   let litersNeeded = totalArea / inkCapacityPerLiter.squareMeters;
   const packsNeeded = {};
-  console.log(litersNeeded);
   
   packs.forEach((value) => { packsNeeded[value] = 0; });
   packs.forEach((pack) => {
@@ -70,6 +74,7 @@ const calculateNecessaryPack = (totalArea) => {
       litersNeeded -= pack;
     }
   });
+
   return packsNeeded;
 };
 
@@ -78,7 +83,7 @@ const getValidationOrPacks = (walls) => {
   const isOnlyValidation = checkWallQuantity(walls);
 
   if (infoIsValid.err) return infoIsValid;
-  if (isOnlyValidation) return succefulValidation; 
+  if (isOnlyValidation) return isOnlyValidation; 
 
   return {
     resp: {
@@ -93,17 +98,3 @@ const getValidationOrPacks = (walls) => {
 module.exports = {
   getValidationOrPacks,
 };
-
-// const teste = [
-//   {
-//     wall: 'wall1',
-//     width: 1,
-//     height: 2.21,
-//     door: true,
-//     window: true,
-//   },
-// ];
-
-// console.log(JSON.stringify(getValidationOrPacks(teste)));
-// console.log(calculateNecessaryPack(calculateTotalArea(teste)));
-// console.log(calculateTotalArea(teste));

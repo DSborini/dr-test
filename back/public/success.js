@@ -1,7 +1,9 @@
 const succefulValidation = {
   resp: {
     status: 200,
-    content: 'Validação concluída',
+    content: {
+      message: 'Validação concluída',
+    },
   },
 }; 
 

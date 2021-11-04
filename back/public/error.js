@@ -25,8 +25,18 @@ const minWallHeightError = {
   },
 };
 
+const reqQuantError = {
+  err: {
+    status: 400,
+    message: {
+      message: 'Você deve informar apenas uma parede para validação, ou 4 paredes para o calculo',
+    },
+  },
+};
+
 module.exports = {
   proportionError,
   minWallHeightError,
   reqContentError,
+  reqQuantError,
 };
