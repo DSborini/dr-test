@@ -1,10 +1,13 @@
 const axios = require('axios');
 
-axios({
-  method: 'post',
-  url: '/user/12345',
-  data: {
-    nome: 'Victor',
-    sobrenome: 'Nogueira'
-  }
-});
+const validateWallsInfo = async (wallsInfo) => {
+  const resp = await axios({
+    method: 'get',
+    url: 'http://localhost:3001/paintings/',
+    data: wallsInfo,
+  });
+
+  return resp;
+};
+
+export default validateWallsInfo;
