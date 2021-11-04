@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const paintingsController = require('../controllers/paintingsController');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(bodyParser.json());
 

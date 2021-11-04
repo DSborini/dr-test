@@ -31,8 +31,8 @@ const wallSchema = Joi.object({
   wall: Joi.string().required(),
   width: Joi.number().min(1).max(15).required(),
   height: Joi.number().min(1).max(15).required(),
-  door: Joi.boolean().required(),
-  window: Joi.boolean().required(),
+  door: Joi.number().integer().required(),
+  window: Joi.number().integer().required(),
 });
 
 const validateWallsInfo = (walls) => {
@@ -40,11 +40,11 @@ const validateWallsInfo = (walls) => {
   walls.forEach((wall) => {
     const { error } = wallSchema.validate(wall);
     const wallArea = wall.width * wall.height;
-    const addonsArea = doorInfo.area + windowInfo.area;
+    const addonsArea = doorInfo.area * wall.door + windowInfo.area * wall.window;
     if (error) status = reqContentError;
-    if (wall.door && wall.window && addonsArea > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
-    if (wall.door && doorInfo.area > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
-    if (wall.window && windowInfo.area > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
+    if (wall.door > 0 && wall.window > 0 && addonsArea > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
+    if (wall.door > 0 && doorInfo.area * wall.door > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
+    if (wall.window > 0 && windowInfo.area * wall.window > getPercentage(wallArea, addonsMaxArea)) status = proportionError;
     if (wall.door && wall.height < (minWallHeightDoor + doorInfo.height)) status = minWallHeightError;
   });
 
@@ -55,8 +55,8 @@ const calculateTotalArea = (walls) => {
   let totalArea = 0;
   walls.forEach((wall) => {
     totalArea += wall.width * wall.height;
-    if (wall.door) totalArea -= doorInfo.area;
-    if (wall.window) totalArea -= windowInfo.area;
+    if (wall.door > 0) totalArea -= doorInfo.area * wall.door;
+    if (wall.window > 0) totalArea -= windowInfo.area * wall.window;
   });
 
   return totalArea;
