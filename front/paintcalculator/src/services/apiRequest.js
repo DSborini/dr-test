@@ -8,13 +8,35 @@ const api = axios.create({
 const validateWallsInfo = async (wallsInfo) => {
   api.get('/paintings/', { data: wallsInfo } )
   .then(function (response) {
-    console.log(response.status);
-    return response.data;
+    return { data: response.data, status: response.status };
   })
   .catch(function (error) {
-    console.log(error.response.data);
-    return error.response.data;
+    return { data: error.response.data, status: error.response.status };
   });
 };
+
+const teste = [
+  {
+    "wall": "wall1",
+    "width": 10000,
+    "height": 10,
+    "door": 0,
+    "window": 0
+  },
+  {
+    "wall": "wall2",
+    "width": 10,
+    "height": 10,
+    "door": 0,
+    "window": 1
+  },
+  {
+    "wall": "wall3",
+    "width": 10,
+    "height": 10,
+    "door": 0,
+    "window": 0
+  }
+]
 
 export default validateWallsInfo;
