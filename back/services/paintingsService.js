@@ -28,7 +28,7 @@ const getPercentage = (totalValue, percentage) => {
 };
 
 const wallSchema = Joi.object({
-  wall: Joi.string().required(),
+  wall: Joi.number().required(),
   width: Joi.number().min(1).max(15).required(),
   height: Joi.number().min(1).max(15).required(),
   door: Joi.number().integer().required(),
